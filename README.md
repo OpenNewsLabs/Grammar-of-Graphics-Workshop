@@ -1,6 +1,6 @@
-# Grammar-of-Graphics-Workshop
+# Grammar of Graphics Workshop
 
-Christine Zhang & Sandhya Kambhampati 
+Sandhya Kambhampati & Christine Zhang
 
 Presented at [International Journalism Festival 2016] (http://www.journalismfestival.com/programme/2016/the-grammar-of-graphics-making-plots-in-r-using-ggplot2)
 
