@@ -7,3 +7,6 @@ Presented at [International Journalism Festival 2016] (http://www.journalismfest
 Description: 
 
 Graphing data is one of the core components of data analysis. Visualizing information can help journalists quickly identify trends within a dataset, and a powerful visual can tell a compelling story. In this workshop, we will present the basics of the ggplot2 package in R (an open-source statistical language), including installing the package and using it for plotting, exploring, and transforming data. Attendees will leave with an appreciation for the grammar of graphics and the power of ggplot2 for both exploratory and explanatory purposes.
+
+[R Presentation](https://github.com/OpenNewsLabs/Grammar-of-Graphics-Workshop/blob/master/ggplot2_pres.Rpres)
+[Html version] (https://github.com/OpenNewsLabs/Grammar-of-Graphics-Workshop/blob/master/ggplot2_pres.html)
