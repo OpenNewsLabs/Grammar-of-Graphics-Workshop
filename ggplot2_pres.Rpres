@@ -1,0 +1,495 @@
+The Grammar of Graphics: Designing and Transforming Data
+========================================================
+author: Sandhya Kambhampati & Christine Zhang 
+date: April 8, 2016
+font-family: 'Helvetica'
+
+Follow along
+========================================================
+<center>
+http://bit.ly/ggplot2workshop
+</center>
+
+What is R?
+========================================================
+<br>
+"R is a language and environment for statistical computing and graphics" 
+
+Source: R-project.org 
+
+What is ggplot2?
+========================================================
+* *ggplot2* is a data visualization package for R
+  + developed by Hadley Wickham
+  + inspired by Leland Wilkinson's "The Grammar of Graphics"
+  + provides an organizing philosophy for building graphs -- a structured approach to graphing
+</br>
+
+> "The emphasis in *ggplot2* is reducing the amount of thinking time by making it easier to go from the plot in your brain to the plot on the page."
+
+> Wickham, 2012
+
+The philosophy of ggplot2
+========================================================
+* A *ggplot2* graph is built up from a few basic elements:
+  + **Data**: the raw data you want to plot
+  + **Aesthetics**: including **Mapping** e.g., which variable is on the x-axis? the y-axis? Should the color/size/position of the plotted data that be mapped to some variable?
+  + **Geometries**: the geometric shapes that represent the data
+  + **Statistics**: statistical transformations that are used to summarize the data
+
+Source: [Hopper (2014)] (http://tomhopper.me/2014/03/28/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/)
+
+How to install ggplot2
+========================================================
+<br>
+```{r, eval = F}
+install.packages('ggplot2')
+library('ggplot2')
+```
+
+<br>
+Make sure you have the most recent version of R to get the most recent version of *ggplot2*
+
+The Data: US States
+========================================================
+```{r}
+data(state)
+states.data <- as.data.frame(state.x77)
+states.data$states <- rownames(states.data)
+colnames(states.data)[4] <- "Life.Exp"
+```
+
+```{r, echo = F}
+library("knitr","xtable")
+kable(head(states.data[, c(1:6, 9)]), format="markdown")
+```
+
+The Data: US States
+========================================================
+<br>
+* **Population**: population estimate as of July 1, 1975
+* **Income**: per capita income (1974)
+* **Illiteracy**: illiteracy (1970, percent of population)
+* **Life Exp**: life expectancy in years (1969–71)
+* **Murder**: murder and non-negligent manslaughter rate per 100,000 population (1976)
+* **HS Grad**: percent high-school graduates (1970)
+</br>
+<br>
+Source: US Census Bureau via [R datasets](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/state.html)
+
+How to plot your data: quick plot
+========================================================
+
+```{r, echo = F}
+library('ggplot2')
+```
+
+```{r, fig.align='center', fig.width=5, fig.height=5, dpi=110}
+qplot(Income, Life.Exp, data = states.data)
+```
+
+How to plot your data: quick plot
+========================================================
+
+```{r, fig.align='center', fig.width=4.5, fig.height=4.5, dpi=110}
+qplot(Income, Life.Exp, data = states.data, main = "Income v. Life Expectancy")
+```
+
+Basic Features of ggplot2
+========================================================
+* Scatter Plot
+* Line Graph
+* Bar Graph
+
+Scatter Plot
+========================================================
+
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  ggtitle("Income v. Life Expectancy")
+```
+
+Scatter Plot
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  ggtitle("Income v. Life Expectancy")
+```
+
+Scatter Plot - start x-axis at 1000
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  scale_x_continuous(limits = c(1000, 7000))
+```
+
+Scatter Plot - start x-axis at 1000
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  scale_x_continuous(limits = c(1000, 7000))
+```
+
+Scatter Plot - start x-axis at 1000 (breaks every 1000), y-axis at 50
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  scale_x_continuous(limits = c(1000, 7000), 
+                     breaks = seq(1000, 7000, 1000)) +
+  scale_y_continuous(limits = c(60, 75))
+```
+
+Scatter Plot - start x-axis at 1000 (breaks every 1000), y-axis at 50
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  scale_x_continuous(limits = c(1000, 7000), breaks = seq(1000, 7000, 1000)) +
+  scale_y_continuous(limits = c(60, 75))
+```
+
+Scatter Plot - color mapped to state
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp, 
+           color = states)) + 
+  geom_point() 
+```
+
+Scatter Plot - color mapped to state
+========================================================
+```{r, echo = F, fig.align='center', fig.width = 10, out.height = '600px', dpi = 200}
+ggplot(states.data, aes(x = Income, y = Life.Exp, color = states)) +
+  geom_point() 
+```
+
+Line Graph
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() + 
+  geom_line()
+```
+
+Line Graph
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(states.data, aes(x = Income, y = Life.Exp)) +
+  geom_point() + geom_line()
+```
+
+Line Graph - specific color/size
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp, 
+           color = states)) + 
+  geom_point(color = 'red', size = 5) + 
+  geom_line(color = 'blue')
+```
+
+Line Graph - specific color/size
+========================================================
+```{r,  echo = F, fig.align='center', fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(states.data, 
+       aes(Income, 
+           Life.Exp, 
+           color = states)) + 
+  geom_point(color = 'red', size = 5) + 
+  geom_line(color = 'blue')
+```
+
+Line Graph - points on top, different line type & point shape
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp) + 
+  geom_line(color = 'blue', 
+            linetype = 'dashed') +
+  geom_point(color = 'red', 
+             size = 2, 
+             shape = 15) 
+```
+
+Line Graph - points on top, different line type & point shape
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5, fig.height=5, dpi=110}
+ggplot(states.data, aes(x = Income, y = Life.Exp)) + 
+  geom_line(color = 'blue', linetype = 'dashed') +
+  geom_point(color = 'red', size = 2, shape = 15)  
+```
+
+Bar Graph - simple
+========================================================
+```{r}
+three.states <- states.data[states.data$states == "California" | states.data$states == "New York" | states.data$states == "Texas", ]
+```
+
+* We picked three states from the data: California, New York, and Texas
+
+```{r, echo = F}
+library("knitr","xtable")
+kable(three.states[, c(1:6, 9)], format="markdown")
+```
+
+
+Bar Graph - simple
+========================================================
+```{r, eval = F}
+ggplot(data = three.states, 
+       aes(x = states, 
+           y = Population)) +
+  geom_bar(stat = 'identity')
+```
+
+Bar Graph - simple
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = three.states, 
+       aes(x = states, 
+           y = Population)) +
+  geom_bar(stat = 'identity')
+```
+
+Bar Graph - simple, transparent background
+========================================================
+```{r, eval = F}
+ggplot(data = three.states, 
+       aes(x = states, 
+           y = Population)) +
+  geom_bar(stat = 'identity') +
+  theme(panel.background = element_blank())
+```
+
+Bar Graph - transparent background
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5, fig.height=5, dpi=110}
+ggplot(data = three.states, 
+       aes(x = states, 
+           y = Population)) +
+  geom_bar(stat = 'identity') +
+  theme(panel.background = element_blank())
+```
+
+Bar Graph - stacked
+========================================================
+```{r}
+three.states$Category <- ifelse(three.states$states == "Texas", "Texas", "California/New York")
+```
+* We created a variable, *Category*, that places the data into two categories: "Texas" if it's from Texas, and "California/New York" if it's from California or New York
+
+```{r, echo = F}
+library("knitr","xtable")
+kable(three.states[, c(1:4, 10)], format="markdown")
+```
+
+Bar Graph - stacked
+========================================================
+```{r, eval = F}
+ggplot(data = three.states, 
+       aes(x = Category, 
+           fill = states)) +
+  geom_bar(position = 'stack') +
+  theme(panel.background = element_blank())
+```
+
+Bar Graph - stacked
+========================================================
+```{r,echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = three.states, 
+       aes(x = Category, 
+           fill = states)) +
+  geom_bar(position = 'stack') +
+  theme(panel.background = element_blank())
+```
+
+Bar Graph - stacked
+========================================================
+```{r, eval = F}
+ggplot(data = three.states, 
+       aes(x = Category, 
+           y = Illiteracy,
+           fill = states)) +
+  geom_bar(stat = 'identity', 
+           position = 'stack') +
+  theme(panel.background = element_blank())
+```
+
+Bar Graph - stacked
+========================================================
+```{r,echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = three.states, 
+       aes(x = Category, 
+           y = Illiteracy,
+           fill = states)) +
+  geom_bar(stat = 'identity', 
+           position = 'stack') +
+  theme(panel.background = element_blank())
+```
+
+Advanced Features
+========================================================
+* Facetting
+* Fitted Lines
+* Text Labels
+
+Facetting
+========================================================
+
+* Facetting allows you to split up your data by one or two variables
+* *facet_grid()* places one or two variables in either vertical or horizontal directions
+* *facet_wrap()* places facets next to each other, wrapping with a certain # of rows and/or columns
+
+```
+facet_grid(vertical ~ horizontal)
+
+facet_wrap(~ variable, nrow = ___, ncol = ___)
+```
+
+Facetting
+========================================================
+
+```{r}
+states.data$Pop.Under.2000 <- ifelse(states.data$Population < 2000, "Pop Under 2000", "Pop Above 2000")
+```
+<br>
+* We created a variable, *Pop.Under.2000*, which shows whether the population (in thousands) is under 2000 or above 2000
+
+Facetting
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  facet_grid(. ~ Pop.Under.2000)
+```
+
+Facetting
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  facet_grid(. ~ Pop.Under.2000)
+```
+
+Fitted Lines
+========================================================
+* How do we draw a fitted line through these points?
+
+```{r, echo = F, fig.align='center',fig.width=5, fig.height=5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() 
+```
+
+Fitted Lines
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  stat_smooth()
+```
+
+Fitted Lines
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  stat_smooth(method = 'lm') 
+```
+
+
+Fitted Lines
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) + 
+  geom_point() +
+  stat_smooth(method = 'lm') 
+```
+
+Text Labels 
+========================================================
+```{r, eval = F}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) +
+        geom_text(aes(label = states)) 
+```
+
+Text Labels
+========================================================
+```{r, echo = F, fig.align='center',fig.width=5.5, fig.height=5.5, dpi=110}
+ggplot(data = states.data, 
+       aes(x = Income, 
+           y = Life.Exp)) +
+  geom_text(aes(label = states)) 
+```
+
+The philosophy of ggplot2 - recap
+========================================================
+* A *ggplot2* graph is built up from a few basic elements:
+  + **Data**: the raw data you want to plot
+  + **Aesthetics**: including **Mapping** e.g., which variable is on the x-axis? the y-axis? Should the color/size/position of the plotted data that be mapped to some variable?
+  + **Geometries**: the geometric shapes that represent the data
+  + **Statistics**: statistical transformations that are used to summarize the data
+
+Source: [Hopper (2014)] (http://tomhopper.me/2014/03/28/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/)
+
+Resources
+======================================================
+* ["A Layered Grammar of Graphics"](http://vita.had.co.nz/papers/layered-grammar.html) by Hadley Wickham
+
+* ["A Simple Introduction to the Graphing Philosophy of ggplot2"](http://tomhopper.me/2014/03/28/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/) by Tom Hopper
+
+* [ggplot2 Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) by RStudio
+
+* [ggplot2 Documentation](http://docs.ggplot2.org/current/) by Hadley Wickham & Winston Chang
+
+* [Resources for Doing Data Journalism](http://rddj.info/) by Timo Grossenbacher
+
+* [Shapes and Line Types in R](http://www.cookbook-r.com/Graphs/Shapes_and_line_types/) by Winston Chang
+
+Thank You + Questions
+======================================================
+<br>
+
+<center>
+Sandhya Kambhampati    
+[@sandhya__k](https://twitter.com/sandhya__k)
+
+Christine Zhang    
+[@christinezhang](https://twitter.com/christinezhang)
+</center>
