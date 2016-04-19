@@ -10,4 +10,3 @@ Graphing data is one of the core components of data analysis. Visualizing inform
 
 [R Presentation](https://github.com/OpenNewsLabs/Grammar-of-Graphics-Workshop/blob/master/ggplot2_pres.Rpres)
 
-[HTML version](https://github.com/OpenNewsLabs/Grammar-of-Graphics-Workshop/blob/master/ggplot2_pres.html)
